@@ -4,12 +4,33 @@
 //   - CommentForm
 
 var CommentBox = React.createClass({
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount: function() {
+    $.getJSON(this.props.url, function(data) {
+      this.setState({
+        data: data
+      });
+    }.bind(this));
+  },
+  handleCommentSubmit: function(comment) {
+    $.post('/api/comment/add', comment,
+      function(comment) {
+        console.log(comment);
+        this.state.data.push(comment);
+        this.setState({
+          data: this.state.data
+        });
+      }.bind(this)
+    );
+  },
   render: function() {
     return (
       <div className='comment-box'>
         <h1>Comments</h1>
-        <CommentList />
-        <CommentForm/>
+        <CommentList data={this.state.data} />
+        <CommentForm onCommentSubmit={this.handleCommentSubmit} />
       </div>
     );
   }
@@ -17,11 +38,11 @@ var CommentBox = React.createClass({
 
 var CommentList = React.createClass({
   render: function() {
+    var content = this.props.data.map(function(comment, i) {
+      return <Comment key={i} author={comment.author}>{comment.text}</Comment>;
+    });
     return (
-      <div className='comment-list'>
-        <Comment author='Peter Hunt'>This is one comment</Comment>
-        <Comment author='Jordan Walke'>This is *another* comment</Comment>
-      </div>
+      <div className='comment-list'>{content}</div>
     );
   }
 });
@@ -39,7 +60,14 @@ var Comment = React.createClass({
 
 var CommentForm = React.createClass({
   handleSubmit: function(e) {
-    console.log()
+    // console.log('submit', e);
+    console.log(this.refs.author.getDOMNode().value);
+    console.log(this.refs.text.getDOMNode().value);
+    this.props.onCommentSubmit({
+      author: this.refs.author.getDOMNode().value.trim(),
+      text: this.refs.text.getDOMNode().value.trim()
+    });
+    e.preventDefault();
   },
   render: function() {
     return (
@@ -53,7 +81,7 @@ var CommentForm = React.createClass({
 })
 
 React.render(
-  <CommentBox />,
+  <CommentBox url='/api/comment/list' />,
   document.getElementById('content')
 );
 
