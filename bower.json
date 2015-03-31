@@ -1,0 +1,23 @@
+{
+  "name": "todo-react",
+  "version": "0.0.0",
+  "moduleType": [
+    "globals"
+  ],
+  "authors": [
+    "Jarvis Chen"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.13.1",
+    "semantic-ui": "~1.11.6"
+  }
+}
